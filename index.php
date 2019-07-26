@@ -4,6 +4,7 @@ require_once("vendor/autoload.php"); //require do composer, para trazer as depen
 
 use \Slim\Slim; //namespace -- classes que serao utilizadas
 use \Hcode\Page;
+use \Hcode\PageAdmin;
 //$app = new \Slim\Slim(); //aplicacao do slim para as rotas
 
 $app = new Slim(); //rotas
@@ -18,6 +19,15 @@ $app->get('/', function() { //rota principal
 	//echo json_encode($results); //visualizar os dados no navegador
 
 	$page = new Page(); //construtor vazio
+
+	$page->setTpl("index"); //vai adicionar o arquivo H1 que contém o "hello"
+	
+});
+
+//criar a rota para o painel administrativo
+$app->get('/admin', function() { //rota principal
+    
+	$page = new PageAdmin(); //construtor vazio
 
 	$page->setTpl("index"); //vai adicionar o arquivo H1 que contém o "hello"
 	

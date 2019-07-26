@@ -16,7 +16,7 @@ class Page{
     ];
 
     //metodo construtor (metodo magico)
-    public function __construct($opts = array()){
+    public function __construct($opts = array(), $tpl_dir="/views/"){ //segundo parametro, devido ao painel administrativo
 
     //fazer o merge com a variavel options -- mesclar
     $this->options = array_merge($this->defaults, $opts); //um array irá sobrescrever o outro
@@ -24,7 +24,7 @@ class Page{
     
     //configurar o template
     $config = array(
-        "tpl_dir"       => $_SERVER["DOCUMENT_ROOT"]."/views/", //pasta para pegar os arquivos HTML, criar essas pastas no diretorio do projeto
+        "tpl_dir"       => $_SERVER["DOCUMENT_ROOT"].$tpl_dir, //pasta para pegar os arquivos HTML, criar essas pastas no diretorio do projeto
         "cache_dir"     => $_SERVER["DOCUMENT_ROOT"]."/views-cache/", //pasta criada no diretorio do projeto
         "debug"         => false // set to false to improve the speed
        );
