@@ -4,6 +4,7 @@ namespace Hcode\DB;
 
 class Sql {
 
+	//configuracao do BD
 	const HOSTNAME = "127.0.0.1";
 	const USERNAME = "root";
 	const PASSWORD = "";
@@ -40,7 +41,7 @@ class Sql {
 
 	}
 
-	public function query($rawQuery, $params = array())
+	public function query($rawQuery, $params = array()) //executa alguma consulta no BD
 	{
 
 		$stmt = $this->conn->prepare($rawQuery);
@@ -51,7 +52,7 @@ class Sql {
 
 	}
 
-	public function select($rawQuery, $params = array()):array
+	public function select($rawQuery, $params = array()):array //executa e traz uma resposta
 	{
 
 		$stmt = $this->conn->prepare($rawQuery);
