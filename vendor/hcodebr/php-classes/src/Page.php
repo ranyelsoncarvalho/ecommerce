@@ -12,6 +12,8 @@ class Page{
     private $options = [];
     //opcoes default
     private $defaults = [
+        "header"=>true,
+        "footer"=>true,
         "data"=>[]
     ];
 
@@ -43,8 +45,10 @@ class Page{
     //as variaveis serão carregadas dependendo da rota
     
     //desenhar o template na tela, ele espera o arquivo a ser chamado
-    $this->tpl->draw("header"); //o arquivo "header" irá repetir para todos, ele sera criado dentro da pasta views
+    //$this->tpl->draw("header"); //o arquivo "header" irá repetir para todos, ele sera criado dentro da pasta views
 
+    //fazer a validaçao para a troca do cabeçalho
+    if($this->options["header"] === true) $this->tpl->draw("header");
     }
 
 
@@ -67,7 +71,7 @@ class Page{
     //ultimo a ser executado
     public function __destruct(){
         //desenhar o rodape, que sera repetido em todas as paginas
-        $this->tpl->draw("footer"); //arquivo html que sera criado
+        if($this->options["footer"] === true) $this->tpl->draw("footer"); //arquivo html que sera criado
     }
 
 }
