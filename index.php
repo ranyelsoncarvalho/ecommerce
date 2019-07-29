@@ -1,5 +1,9 @@
 <?php 
 
+//verificar se a sessao foi iniciada no servidor WEB
+session_start();
+
+
 require_once("vendor/autoload.php"); //require do composer, para trazer as dependencias
 
 use \Slim\Slim; //namespace -- classes que serao utilizadas
@@ -27,7 +31,10 @@ $app->get('/', function() { //rota principal
 
 //criar a rota para o painel administrativo
 $app->get('/admin', function() { //rota principal
-    
+	
+	//fazer a validacao do login
+	User::verifyLogin(); //criar o metodo dentro da classe usuario para fazer a validadao do usuario e so redirecionar para a pagina de login
+
 	$page = new PageAdmin(); //construtor vazio
 
 	$page->setTpl("index"); //vai adicionar o arquivo H1 que contém o "hello"
@@ -54,6 +61,17 @@ $app->post('/admin/login', function(){
 	header("Location: /admin");
 	exit; //para a execução
 
+});
+
+//rota para fazer o logout
+$app->get('/admin/logout', function(){
+	User::logout();
+
+	//redireciona para a tela de login
+	header("Location: /admin/login");
+	exit;
+
+	//"/admin/logout" joga este endereco para o template de logout, arquivo: header.html --> no href=
 });
 
 $app->run(); //rodar a aplicação
