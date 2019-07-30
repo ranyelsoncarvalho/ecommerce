@@ -29,7 +29,7 @@ class Model { //classe para fazer os getters e setters
     public function setData($data = array())
     {
         foreach ($data as $key => $value) {
-            $this->{"set".$key}($value);
+            $this->{"set".$key}($value); //realizar o acesso via get e set
         }
     }
 

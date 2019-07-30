@@ -67,6 +67,68 @@ class User extends Model {
         $_SESSION[User::SESSION] == NULL;
     }
 
+    public static function listAll(){ //metodo para listar todos os usuarios cadastrados
+        $sql = new Sql();
+        return $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b USING(idperson) ORDER BY b.desperson"); //consulta para listar todos os usuarios cadastrados
+    }
+
+    //metodo para salvar os dados no banco de dados
+    public function save(){
+        $sql = new Sql();
+       
+        //os dados precisam ser colocados na ordem em que esta na procedure
+        $results = $sql->select("CALL sp_users_save(:desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
+            ":desperson"=>$this->getdesperson(), //associacao com as chaves
+            ":deslogin"=>$this->getdeslogin(),
+            ":despassword"=>$this->getdespassword(),
+            ":desemail"=>$this->getdesemail(),
+            ":nrphone"=>$this->getnrphone(),
+            ":inadmin"=>$this->getinadmin()
+        )); //a insercao sera por meio de um procedure, deixa a aplicação mais rapida, pois executa apenas uma vez
+        
+        //so interessa o primeiro dado do resultado
+        $this->setData($results[0]);
+
+    }
+
+    public function get($iduser){ //recuperar os dados para fazer a edicao do cadastro
+        $sql = new Sql();
+        $results = $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b USING(idperson) WHERE a.iduser = :iduser", array(
+            ":iduser"=>$iduser
+        ));
+
+        $data = $results[0];
+        $this->setData($data);
+    }
+
+    public function update(){ //atualizar qualquer registro no banco de dados
+        $sql = new Sql();
+       
+        //os dados precisam ser colocados na ordem em que esta na procedure: sp_usersupdate_save
+        $results = $sql->select("CALL sp_usersupdate_save(:iduser, :desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
+            ":iduser"=>$this->getiduser(), //para atualizar o registro no BD
+            ":desperson"=>$this->getdesperson(), //associacao com as chaves
+            ":deslogin"=>$this->getdeslogin(),
+            ":despassword"=>$this->getdespassword(),
+            ":desemail"=>$this->getdesemail(),
+            ":nrphone"=>$this->getnrphone(),
+            ":inadmin"=>$this->getinadmin()
+        )); //a insercao sera por meio de um procedure, deixa a aplicação mais rapida, pois executa apenas uma vez
+        
+        //so interessa o primeiro dado do resultado, ele pega o resultado e joga no objeto
+        $this->setData($results[0]);
+    }
+
+    public function delete(){ //metodo para deletar usuario
+
+        $sql = new Sql();
+
+        $sql->query("CALL sp_users_delete(:iduser)", array( //realiza a exclusao por meio de uma procedure
+            ":iduser"=>$this->getiduser()
+        ));
+
+    }
+
 }
 
 ?>
