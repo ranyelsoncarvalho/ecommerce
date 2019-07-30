@@ -129,6 +129,53 @@ class User extends Model {
 
     }
 
+    //metodo para recuperar a senha
+    public static function getForgot($email){
+        
+        //verificar se o email esta na base de dados
+        $sql = new Sql();
+        $results = $sql->select("SELECT * FROM tb_persons a INNER JOIN tb_users b USING(idperson) WHERE a.desemail = :=email", array(
+            //bind parametros
+            ":email"=>$email
+        ));
+
+        //validar o email
+        if(count($results) === 0) //significa que nao retornou nada
+        {
+            throw new \Exception("Não foi possível recuperar a senha", 1);
+        }
+        else{
+
+            //pegar os dados que retornaram na posicao 0
+            $data = $results[0];
+
+            //vamos criar um novo registro na tabela de recuperacao de senha, utilizando uma procedure
+            $results2 = $sql->select("CALL sp_userspasswordsrecoveries_create(:iduser, :desip)", array(
+                ":iduser"=>$data["iduser"],
+                ":desip"=>$_SERVER["REMOTE_ADDR"] //pegar o IP do usuario
+            ));
+
+
+            //verificar se criou a variavel $results2
+            if(count($results2)===0)
+            {
+                throw new \Exception("Não foi possível recuperar a senha", 1);
+            }
+            else{
+                
+                //vai conter os dados recuperados
+                $dataRecovery = $results2[0]; //jogando os dados para o objeto
+
+
+                //agora e necessario gerar um codigo criptografrado para o usuario
+                base64_encode((mcrypt_encrypt(MCRYPT_RIJNDAEL_128)));
+
+            }
+
+        }
+
+    }
+
 }
 
 ?>

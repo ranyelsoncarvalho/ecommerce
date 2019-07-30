@@ -180,6 +180,27 @@ $app->post('/admin/users/:iduser', function($iduser){
 	
 });
 
+//rota para a funcionalidade: resetar senha
+$app->get('/admin/forgot', function(){
+
+	//vai ser similar a tela de login
+	$page = new PageAdmin([
+		//desabilitar a construção do header e footer da página, pois são diferentes na página do login
+		"header"=>false,
+		"footer"=>false
+	]);
+	$page->setTpl("forgot"); //chamando a página criada (template)
+});
+
+//criar a rota para a solicitacao do email para troca de senha
+$app->post('/admin/forgot', function(){
+
+	//necessario buscar o email que o usuario cadastro, lembrando que isto e feito via post
+	
+	$user = User::getForgot($_POST["email"]); //metodo na classe User.php para recuperar a senha
+
+});
+
 $app->run(); //rodar a aplicação
 
  ?>
