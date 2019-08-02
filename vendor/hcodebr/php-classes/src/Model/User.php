@@ -10,6 +10,9 @@ class User extends Model {
     //constante para a variavel de sessao
     const SESSION = "User";
 
+    //constante de encriptacao, necessaria para criptografar e descriptografar
+    const SECRET = "HcodePhp7_Secret";
+
     //metodo do login
     public static function login($login, $password){
         
@@ -146,7 +149,7 @@ class User extends Model {
         }
         else{
 
-            //pegar os dados que retornaram na posicao 0
+            //pegar os dados que retornaram na posicao 0, dados que vem do banco
             $data = $results[0];
 
             //vamos criar um novo registro na tabela de recuperacao de senha, utilizando uma procedure
@@ -167,8 +170,27 @@ class User extends Model {
                 $dataRecovery = $results2[0]; //jogando os dados para o objeto
 
 
-                //agora e necessario gerar um codigo criptografrado para o usuario
-                base64_encode((mcrypt_encrypt(MCRYPT_RIJNDAEL_128)));
+                //criptografia do dado
+                $code = openssl_encrypt($dataRecovery['idrecovery'], 'AES-128-CBC', pack("a16", User::SECRET), 0, pack("a16", User::SECRET_IV));
+				$code = base64_encode($code);
+
+                //montar o link no qual sera recebido o código, que sera encaminhado pelo email
+                $link = "http://www.hcodecommerce.com.br/admin/forgot/reset?code=$code"; //necessario criar a rota "reset", "?" significa que sera passado via POST
+
+                //enviar por e-mail o código para resetar a senha
+                $mailer = new Mailer($data["desemail"], $data["desperson"], "Redefinir senha da HCode Store", "forgot", array(
+                    //dados a serem renderizados no template email
+                    "name"=>$data["desperson"], //nome do usuario
+                    "link"=>$link
+                ));
+
+                //enviar o email
+                $mailer->send();
+
+                return $link;
+
+                //retornar os dados do usuario que foi recuperado
+
 
             }
 

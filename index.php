@@ -196,9 +196,23 @@ $app->get('/admin/forgot', function(){
 $app->post('/admin/forgot', function(){
 
 	//necessario buscar o email que o usuario cadastro, lembrando que isto e feito via post
-	
 	$user = User::getForgot($_POST["email"]); //metodo na classe User.php para recuperar a senha
 
+	//redirect para confirmar para o usuario que o email foi enviado com sucesso
+	header("Location: /admin/forgot/sent");
+	exit;
+
+});
+
+//criar a rota SENT
+$app->get('/admin/forgot/sent', function(){
+	//rendenrizar o template do SENT
+	$page = new PageAdmin([
+		//desabilitar a construção do header e footer da página, pois são diferentes na página do login
+		"header"=>false,
+		"footer"=>false
+	]);
+	$page->setTpl("forgot-sent"); //chamando a página criada (template)
 });
 
 $app->run(); //rodar a aplicação

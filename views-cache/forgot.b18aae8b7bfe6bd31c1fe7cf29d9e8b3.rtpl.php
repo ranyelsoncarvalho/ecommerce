@@ -33,9 +33,9 @@
   <div class="lockscreen-item">
 
     <!-- lockscreen credentials (contains the form) -->
-    <form  action="/admin/forgot" method="post">
+    <form  action="/admin/forgot" method="post"> <!--para onde o formulario sera enviado-->
       <div class="input-group">
-        <input type="email" class="form-control" placeholder="Digite o e-mail" name="email">
+        <input type="email" class="form-control" placeholder="Digite o e-mail" name="email"> <!--campo que esta sendo enviado-->
 
         <div class="input-group-btn">
           <button type="submit" class="btn"><i class="fa fa-arrow-right text-muted"></i></button>
