@@ -10,6 +10,7 @@ use \Slim\Slim; //namespace -- classes que serao utilizadas
 use \Hcode\Page;
 use \Hcode\PageAdmin;
 use \Hcode\Model\User; //para fazer a validadao de usuario e login
+use \Hcode\Model\Category;
 //$app = new \Slim\Slim(); //aplicacao do slim para as rotas
 
 $app = new Slim(); //rotas
@@ -147,6 +148,13 @@ $app->post('/admin/users/create', function(){
 	//verificar se o cadastro eh admin ou usuario normal
 	$_POST["inadmin"] = (isset($_POST["inadmin"]))?1:0;//verifica se o valor foi definido como admin (1) ou nao (0)
 
+	$_POST['despassword'] = password_hash($_POST["despassword"], PASSWORD_DEFAULT, [
+ 
+		"cost"=>12
+		
+		]);
+
+
 	$user->setData($_POST); //metodo que cria as varias para o DAO
 
 	//chamar o metodo para salvar
@@ -213,6 +221,112 @@ $app->get('/admin/forgot/sent', function(){
 		"footer"=>false
 	]);
 	$page->setTpl("forgot-sent"); //chamando a página criada (template)
+});
+
+//rota para o template de categoria
+$app->get("/admin/categories", function(){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin();
+
+	$categories = Category::listAll(); //classe de categoria e o metodo de categorias (arquivo: Category.php)
+
+	$page = new PageAdmin();
+
+	$page->setTpl("categories", [
+		'categories'=>$categories
+	]);
+});
+
+//rota para visualizar as categorias de produto
+$app->get("/admin/categories/create", function(){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin();
+
+	$page = new PageAdmin();
+	$page->setTpl("categories-create"); //retorna a view para cadastrar uma categoria
+
+});
+
+//rota para cadastrar a categoria
+$app->post("/admin/categories/create", function(){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin();
+
+	$category = new Category();
+
+	//carregar o dado que vem do formulario
+	$category->setData($_POST);
+
+	//salvar o metodo
+	$category->save();
+
+	header('Location: /admin/categories'); //redirecionamento apos o cadastro da categoria
+	exit;
+
+});
+
+//rota para a exclusao da categoria
+$app->get("/admin/categories/:idcategory/delete", function($idcategory){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin();
+	
+	//cria o objeto category
+	$category = new Category();
+
+	//carregar o objeto para ver se ele existe no BD
+	$category->get((int)$idcategory);
+
+	//metodo para a exclusao
+	$category->delete();
+
+	//redirecionar para a lista de categorias
+	header('Location: /admin/categories'); //redirecionamento apos o cadastro da categoria
+	exit;
+
+});
+
+//rota para editar uma categoria de produto
+$app->get("/admin/categories/:idcategory", function($idcategory){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin();
+
+	$category = new Category();
+
+	$category->get((int)$idcategory);
+
+	//mostra um HTML para a edicao da categoria
+	$page = new PageAdmin();
+	$page->setTpl("categories-update", [
+		'category'=>$category->getValues()
+	]); //passa o nome da views
+
+});
+
+//rota para efetuar a edicao na categoria do produto
+$app->post("/admin/categories/:idcategory", function($idcategory){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin();
+
+	$category = new Category();
+
+	$category->get((int)$idcategory);
+
+	//carrega os dados atuais
+	$category->setData($_POST);
+
+	//salvar a edicao da categoria
+	$category->save();
+
+	//fazer o redirect para as categorias
+	header('Location: /admin/categories'); //redirecionamento apos o cadastro da categoria
+	exit;
+
 });
 
 $app->run(); //rodar a aplicação

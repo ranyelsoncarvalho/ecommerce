@@ -16,7 +16,7 @@ class Model { //classe para fazer os getters e setters
         //iniciar o metodo identificado
         switch ($method) {
             case 'get':
-                    return $this->values[$fieldName]; //vai buscar um determinado valor
+                    return (isset($this->values[$fieldName])) ? $this->values[$fieldName] : NULL; //vai buscar um determinado valor
                 break;
             case 'set':
                     $this->values[$fieldName] = $args[0]; //vai atribuir um determinado valor

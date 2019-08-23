@@ -4,6 +4,7 @@ namespace Hcode\Model;
 
 use \Hcode\DB\Sql; //buscar a classe SQL criada
 use \Hcode\Model;
+use \Hcode\Mailer;
 
 class User extends Model {
 
@@ -129,6 +130,7 @@ class User extends Model {
         $sql->query("CALL sp_users_delete(:iduser)", array( //realiza a exclusao por meio de uma procedure
             ":iduser"=>$this->getiduser()
         ));
+       
 
     }
 
@@ -137,7 +139,7 @@ class User extends Model {
         
         //verificar se o email esta na base de dados
         $sql = new Sql();
-        $results = $sql->select("SELECT * FROM tb_persons a INNER JOIN tb_users b USING(idperson) WHERE a.desemail = :=email", array(
+        $results = $sql->select("SELECT * FROM tb_persons a INNER JOIN tb_users b USING(idperson) WHERE a.desemail = :email", array(
             //bind parametros
             ":email"=>$email
         ));
@@ -171,8 +173,9 @@ class User extends Model {
 
 
                 //criptografia do dado
-                $code = openssl_encrypt($dataRecovery['idrecovery'], 'AES-128-CBC', pack("a16", User::SECRET), 0, pack("a16", User::SECRET_IV));
-				$code = base64_encode($code);
+                //$code = openssl_encrypt($dataRecovery['idrecovery'], 'AES-128-CBC', pack("a16", User::SECRET), 0, pack("a16", User::SECRET_IV));
+                $code = base64_encode(openssl_encrypt($dataRecovery["idrecovery"],"AES-128-ECB",User::SECRET));
+                $code = base64_encode($code);
 
                 //montar o link no qual sera recebido o código, que sera encaminhado pelo email
                 $link = "http://www.hcodecommerce.com.br/admin/forgot/reset?code=$code"; //necessario criar a rota "reset", "?" significa que sera passado via POST
