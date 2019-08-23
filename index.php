@@ -297,6 +297,7 @@ $app->get("/admin/categories/:idcategory", function($idcategory){
 
 	$category = new Category();
 
+	//carregar a categoria que foi passada na url
 	$category->get((int)$idcategory);
 
 	//mostra um HTML para a edicao da categoria
@@ -315,6 +316,7 @@ $app->post("/admin/categories/:idcategory", function($idcategory){
 
 	$category = new Category();
 
+	//carregar a categoria que foi passada
 	$category->get((int)$idcategory);
 
 	//carrega os dados atuais
@@ -326,6 +328,25 @@ $app->post("/admin/categories/:idcategory", function($idcategory){
 	//fazer o redirect para as categorias
 	header('Location: /admin/categories'); //redirecionamento apos o cadastro da categoria
 	exit;
+
+});
+
+//rota para as categorias
+$app->get("/categories/:idcategory", function($idcategory){
+
+	$category = new Category();
+
+	//recuperar a categoria que foi passada no GET
+	$category->get((int)$idcategory);
+
+	//chamar o template do site onde esta a categoria
+	$page = new Page();
+
+	//template que sera chamado
+	$page->setTpl("category", [
+		'category'=>$category->getValues(),
+		'products'=>[] //colocar os produtos que vem do banco de dados
+	]);
 
 });
 
