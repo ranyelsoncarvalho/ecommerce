@@ -106,5 +106,26 @@ $app->post("/admin/products/:idproduct", function($idproduct){
      exit;
 });
 
+//rota para excluir o produto
+$app->get("/admin/products/:idproduct/delete", function($idproduct){
+
+    //verificar se o usuario esta logado
+    User::verifyLogin();
+
+    //carrega a lista de produtos
+    $product = new Product();
+    
+    //pegar o produto que foi passado na url
+    $product->get((int)$idproduct);
+
+    $product->delete();
+
+    //redirecionar para a lista de produtos
+    header('Location: /admin/products');
+    exit;
+});
+
+
+
 
 ?>

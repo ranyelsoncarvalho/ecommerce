@@ -119,6 +119,8 @@ class Product extends Model {
         $this->checkPhoto();
 
     }
+
+    
 }
 
 ?>
