@@ -33,7 +33,7 @@ class Model { //classe para fazer os getters e setters
         }
     }
 
-    //retorna os atritubos
+    //retorna os atritubos que vem do banco de dados
     public function getValues(){
         return $this->values;
     }
