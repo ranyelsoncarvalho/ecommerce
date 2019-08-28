@@ -64,9 +64,9 @@ class Product extends Model {
     //metodo para verificar se tem ou n?o foto do produto
     public function checkPhoto(){
         //verifica na pasta onde a imagem sera salva -- especificando o caminho de pasta
-        if (\file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "res" . DIRECTORY_SEPARATOR . "site" . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . "products" . DIRECTORY_SEPARATOR . $this->getidproduct() . "jpg")) //o nome da foto ser? o nome do arquivo
+        if (\file_exists($_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . "res" . DIRECTORY_SEPARATOR . "site" . DIRECTORY_SEPARATOR . "img" . DIRECTORY_SEPARATOR . "products" . DIRECTORY_SEPARATOR . $this->getidproduct() . ".jpg")) //o nome da foto ser? o nome do arquivo
         {
-            $url =  "/res/site/img/products/" . $this->getidproduct() . "jpg"; //passando a URL
+            $url =  "/res/site/img/products/" . $this->getidproduct() . ".jpg"; //passando a URL
         }
         else { //retornar uma foto padrao
             $url =  "/res/site/img/product.jpg";
