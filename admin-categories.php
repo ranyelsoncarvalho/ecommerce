@@ -115,21 +115,27 @@ $app->post("/admin/categories/:idcategory", function($idcategory){
 
 });
 
-//rota para as categorias
-$app->get("/categories/:idcategory", function($idcategory){
+
+
+//rota para acessar as (categorias e linkar com os produtos)
+$app->get("/admin/categories/:idcategory/products", function($idcategory){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin();
 
 	$category = new Category();
 
-	//recuperar a categoria que foi passada no GET
+	//recuperar a categoria que foi passada no GET, carrega os dados da categoria (id)
 	$category->get((int)$idcategory);
 
 	//chamar o template do site onde esta a categoria
-	$page = new Page();
+	$page = new PageAdmin();
 
 	//template que sera chamado
-	$page->setTpl("category", [
+	$page->setTpl("categories-products", [
 		'category'=>$category->getValues(),
-		'products'=>[] //colocar os produtos que vem do banco de dados
+		'productsRelated'=>$category->getProducts(true), //passar os produtos relacionados, por padrao o metodo vai chamar os produtos relacionados
+		'productsNotRelated'=>$category->getProducts(false)
 	]);
 
 });

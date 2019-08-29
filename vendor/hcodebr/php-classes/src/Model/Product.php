@@ -14,6 +14,19 @@ class Product extends Model {
         return $sql->select("SELECT * FROM tb_products ORDER BY desproduct"); //consulta para listar todos os produtos cadastrados
     }
 
+    //como a foto nao tem o campo no banco de dados, vamos criar um metodo para guardar esses dados
+    public static function checkList($list){
+
+        foreach ($list as &$row){ //cada item da lista serah chamado de row, uso do & para manipular a mesma variavel
+            $p = new Product();
+            $p->setData($row);
+            $row = $p->getValues(); //assim e possivel carregar as imagens do produto no banco
+        }
+
+        return $list;
+
+    }
+
     //metodo para salvar um produto
     public function save(){
 
@@ -119,6 +132,8 @@ class Product extends Model {
         $this->checkPhoto();
 
     }
+
+
 
     
 }
