@@ -5,6 +5,7 @@ use \Hcode\PageAdmin;
 use \Hcode\Page;
 use \Hcode\Model\User;
 use \Hcode\Model\Category;
+use \Hcode\Model\Product;
 
 
 //rota para o template de categoria
@@ -139,5 +140,52 @@ $app->get("/admin/categories/:idcategory/products", function($idcategory){
 	]);
 
 });
+
+//rota para adicionar categoria do produto
+$app->get("/admin/categories/:idcategory/products/:idproduct/add", function($idcategory, $idproduct){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin();
+
+	//classe categoria e carrega a categoria que foi passada via GET
+	$category = new Category();
+	$category->get((int)$idcategory);
+
+	//carregar o produto que foi passado via GET
+	$product = new Product();
+	$product->get((int)$idproduct);
+
+	//chama o metodo para cadastrar categoria do produto
+	$category->addProduct($product);
+
+	//redirecionar para a lista da relacao de categoria e produto
+	header("Location: /admin/categories/".$idcategory."/products");
+	exit;
+});
+
+//rota para remover categoria do produto
+$app->get("/admin/categories/:idcategory/products/:idproduct/remove", function($idcategory, $idproduct){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin();
+
+	//classe categoria e carrega a categoria que foi passada via GET
+	$category = new Category();
+	$category->get((int)$idcategory);
+
+	//carregar o produto que foi passado via GET
+	$product = new Product();
+	$product->get((int)$idproduct);
+
+	//chama o metodo para remover categoria do produto
+	$category->removeProduct($product);
+
+	//redirecionar para a lista da relacao de categoria e produto
+	header("Location: /admin/categories/".$idcategory."/products");
+	exit;
+});
+
+//metodo de paginacao
+
 
 ?>

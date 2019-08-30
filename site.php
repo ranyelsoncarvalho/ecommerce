@@ -43,7 +43,7 @@ $app->get("/categories/:idcategory", function($idcategory){
 	//template que sera chamado
 	$page->setTpl("category", [
 		'category'=>$category->getValues(),
-		'products'=>[] //colocar os produtos que vem do banco de dados
+		'products'=>Product::checkList($category->getProducts()) //colocar os produtos que vem do banco de dados de acordo com a categoria, passar o metodo "checklist" para carregar a foto
 	]);
 
 });

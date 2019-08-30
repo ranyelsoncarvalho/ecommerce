@@ -110,6 +110,32 @@ class Category extends Model {
         }
 
     }
+
+    //funcao para realizar a adicao de categoria ao produto
+    public function addProduct(Product $product){ //forca que seja passado um produto no parametro
+
+        //criar a query para fazer a adicao do produto
+        $sql = new Sql();
+        $sql->query("INSERT INTO tb_productscategories (idcategory, idproduct) VALUES(:idcategory, :idproduct)", [
+            ':idcategory'=>$this->getidcategory(), //faz o bind dos parametros
+            ':idproduct'=>$product->getidproduct()    
+        ]);//eh utilizado a "query" pois nao sera retornado nada, quando eh para inserir algum dado no bando de dados
+
+    }
+
+    //funcao para realizar remover a categoria ao produto
+    public function removeProduct(Product $product){ //forca que seja passado um produto no parametro
+
+        //criar a query para fazer a remocao da categoria do produto
+        $sql = new Sql();
+        $sql->query("DELETE FROM tb_productscategories WHERE idcategory = :idcategory AND idproduct = :idproduct", [
+            ':idcategory'=>$this->getidcategory(), //faz o bind dos parametros
+            ':idproduct'=>$product->getidproduct()    
+        ]);//eh utulizado a "query" pois nao sera retornado nada, quando eh para inserir algum dado no bando de dados
+
+    }
+
+
 }
 
 ?>
