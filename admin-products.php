@@ -11,14 +11,14 @@ $app->get("/admin/products", function(){ //rota para listar todos os produtos
     User::verifyLogin();
 
     //variavel para listar todos os produtos
-    $produtcs = Product::listAll(); //metodo para listar todo os produtos cadastrados
+    $products = Product::listAll(); //metodo para listar todo os produtos cadastrados
 
     $page = new PageAdmin(); //classe do painel administrativo
     
     //template a ser chamado
     $page->setTpl("products", [
         //lista de produtos
-        "products"=>$produtcs
+        "products"=>$products
     ]);
 
 });

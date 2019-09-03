@@ -65,6 +65,29 @@ $app->get("/categories/:idcategory", function($idcategory){
 
 });
 
+//rota para o produto
+$app->get("/products/:desurl", function($desurl){
 
+	$product = new Product();
+
+	//metodo para retornar a URL do produto - metodo criado na classe de produto
+	$product->getFromURL($desurl);
+
+
+
+
+	//chamar o template do site
+	$page = new Page();
+
+
+	//template que sera chamado para carregar os detalhes do produto
+	$page->setTpl("product-detail", [
+		//dados que serao carregados do produto
+		'product'=>$product->getValues(), //variavel 'product' vem do template
+		'categories'=>$product->getCategories() 	//metodo para trazer as categorias do produto
+	]);
+
+
+});
 
 ?>

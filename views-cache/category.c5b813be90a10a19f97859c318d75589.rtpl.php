@@ -21,7 +21,7 @@
                     <div class="product-upper">
                         <img src="<?php echo htmlspecialchars( $value1["desphoto"], ENT_COMPAT, 'UTF-8', FALSE ); ?>" alt=""> <!--carregar as informacos que vem do BD-->
                     </div>
-                    <h2><a href="/produtcs/<?php echo htmlspecialchars( $value1["desurl"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"><?php echo htmlspecialchars( $value1["desproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?></a></h2> <!--link do produto-->
+                    <h2><a href="/products/<?php echo htmlspecialchars( $value1["desurl"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"><?php echo htmlspecialchars( $value1["desproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?></a></h2> <!--link do produto-->
                     <div class="product-carousel-price">
                         <ins>R$<?php echo formatPrice($value1["vlprice"]); ?></ins> <del>$999.00</del>
                     </div>  
