@@ -111,6 +111,40 @@ class Category extends Model {
 
     }
 
+    //funcao para realizar a paginacao
+    public function getProductsPage($page = 1, $itemsPerPage = 3){ //vai receber qual a p?gina e numero de itens por pagina que vamos exibir
+
+        //$itemsPerPage --> indica o numero de items que sera visualizado por p?gina
+
+        //regra para gerar a quantidade de paginas
+        $start = ($page-1)*$itemsPerPage; //pegar a primeira pagina
+        
+        $sql = new Sql(); //fazer o acesso ao banco de dados
+        //obter o resultado dos produtos
+        $results = $sql->select("SELECT SQL_CALC_FOUND_ROWS * FROM tb_products a
+            INNER JOIN tb_productscategories b ON a.idproduct = b.idproduct
+            INNER JOIN tb_categories c ON c.idcategory = b.idcategory
+            WHERE c.idcategory = :idcategory
+            LIMIT $start, $itemsPerPage;",
+            [
+                ':idcategory'=>$this->getidcategory()]
+            );
+
+        //SQL_CALC_FOUND_ROWS --> funcao do MySQL para contar as linhas da tabela, utiliza uma segunda consulta para pegar o numero total de linhas
+        //limit --> limitar o numero de resultados
+
+        //resultado do total de produtos (numero), identificar quantos itens tem no banco
+        $resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
+
+        //retornar os dados do produto
+        return [
+            'data'=>Product::checkList($results),
+            'total'=>(int)$resultTotal[0]["nrtotal"], //informando a linha e a coluna que ser? trazida da consulta
+            'pages'=>ceil($resultTotal[0]["nrtotal"] / $itemsPerPage) //metodo para arredondar para cima
+        ];
+
+    }
+
     //funcao para realizar a adicao de categoria ao produto
     public function addProduct(Product $product){ //forca que seja passado um produto no parametro
 

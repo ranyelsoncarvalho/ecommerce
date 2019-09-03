@@ -26,24 +26,41 @@ $app->get('/', function() { //rota principal (home do site)
 	
 });
 
-//rota para as categorias
+//rota para as categorias dos produtos
 $app->get("/categories/:idcategory", function($idcategory){
 
 	//verificar se o usuario esta logado
 	//User::verifyLogin();
+
+	//receber a pagina
+	$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;//verificar se foi definido no GET da pagina
 
 	$category = new Category();
 
 	//recuperar a categoria que foi passada no GET
 	$category->get((int)$idcategory);
 
+	//informacoes da pagina, preciso passar a pagina atual
+	$pagination = $category->getProductsPage($page);
+
+	//array para passar as paginas
+	$pages = [];
+	for($i = 1; $i<=$pagination['pages']; $i++){
+		array_push($pages, [
+			'link'=>'/categories/'.$category->getidcategory().'?page='. $i,
+			'page'=>$i //numero da pagina que sera visualizado
+		]); //adicionar item ao array
+	}
+
 	//chamar o template do site onde esta a categoria
 	$page = new Page();
 
-	//template que sera chamado
+	//template que sera chamado para carregar os produtos de determinada categoria
 	$page->setTpl("category", [
 		'category'=>$category->getValues(),
-		'products'=>Product::checkList($category->getProducts()) //colocar os produtos que vem do banco de dados de acordo com a categoria, passar o metodo "checklist" para carregar a foto
+		//'products'=>Product::checkList($category->getProducts()) //colocar os produtos que vem do banco de dados de acordo com a categoria, passar o metodo "checklist" para carregar a foto
+		'products'=>$pagination["data"],
+		'pages'=>$pages
 	]);
 
 });
