@@ -116,8 +116,16 @@ $app->get("/cart/:idproduct/add", function($idproduct){
 	//recuperar o carrinho da sessao
 	$cart = Cart::getFromSession();
 
-	//metodo para adicionar o produto no carrinho
-	$cart->addProduct($product);
+	//para adicionar junto ao carrinho a quantidade definida pelo usuario
+	$qtd = (isset($_GET['qtd']))? (int)$_GET['qtd'] : 1;
+
+	//chamar o metodo a quantidade de vezes necessarias
+	for ($i = 0; $i < $qtd; $i++) {
+		
+		//metodo para adicionar o produto no carrinho
+		$cart->addProduct($product);
+		
+	}
 
 	//redirecionar para visualizar o carrinho
 	header("Location: /cart");
