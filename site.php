@@ -6,6 +6,7 @@ use \Hcode\Page;
 //chamar a classe de produtos, para que eles sejam carregados na home do site
 use \Hcode\Model\Product;
 use \Hcode\Model\Category;
+use \Hcode\Model\Cart;
 
 $app->get('/', function() { //rota principal (home do site)
     
@@ -87,6 +88,17 @@ $app->get("/products/:desurl", function($desurl){
 		'categories'=>$product->getCategories() 	//metodo para trazer as categorias do produto
 	]);
 
+
+});
+
+//rota para acessar o carrinho de compras
+$app->get("/cart", function(){
+	
+	$cart = Cart::getFromSession();
+
+	$page = new Page(); //chamar o template do site
+
+	$page->setTpl("cart");
 
 });
 

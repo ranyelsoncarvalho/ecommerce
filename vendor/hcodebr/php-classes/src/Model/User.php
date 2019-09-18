@@ -14,6 +14,45 @@ class User extends Model {
     //constante de encriptacao, necessaria para criptografar e descriptografar
     const SECRET = "HcodePhp7_Secret";
 
+    //metodo para buscar os dados da sessao e verificar se o usuario esta logado
+    public static function getFromSession(){
+        $user = new User();
+
+        //verificar se a sessao existe
+        if(isset($_SESSION[User::SESSION]) && (int)$_SESSION[User::SESSION]['iduser'] > 0){
+
+            $user->setData($_SESSION[User::SESSION]); //os dados estao dentro da sessao
+          
+        }
+
+        return $user;
+
+    }
+
+    //metodo para verificar se o usuario esta logado
+    public static function checkLogin($inadmin = true){
+
+        if(!isset($_SESSION[User::SESSION]) 
+            || 
+            !$_SESSION[User::SESSION] 
+            ||!(int)$_SESSION[User::SESSION]["iduser"] > 0 //verificar se carrega algum usuario
+        ){
+            //nao esta logado
+            return false;
+        } else {
+            if ($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true) {
+                return true;
+            } //verifica se e uma rota da administracao
+            else if ($inadmin === false) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+
+    }
+
     //metodo do login
     public static function login($login, $password){
         
@@ -51,20 +90,29 @@ class User extends Model {
     }
 
     public static function verifyLogin($inadmin = true){ //verificar se o um usuario logado da administracao
-        if(
+        //if(
             //verificar se foi defindo a sessão ou se o valor esta vazio e tambem o ID do usuario
-            !isset($_SESSION[User::SESSION]) 
-            || 
-            !$_SESSION[User::SESSION] 
-            ||!(int)$_SESSION[User::SESSION]["iduser"] > 0 //verificar se carrega algum usuario
-            ||
-            (bool)$_SESSION[User::SESSION]["iduser"] !== $inadmin //verificar se o usuario faz parte do grupo administrativo
-        ){
+            //!isset($_SESSION[User::SESSION]) 
+            //|| 
+            //!$_SESSION[User::SESSION] 
+            //||!(int)$_SESSION[User::SESSION]["iduser"] > 0 //verificar se carrega algum usuario
+            //||
+            //(bool)$_SESSION[User::SESSION]["iduser"] !== $inadmin //verificar se o usuario faz parte do grupo administrativo
+            //User::checkLogin($inadmin)
+        //){
             //redirecionar para o login caso não tenha os dados validados na credencial
-            header("Location: /admin/login");
+        //    header("Location: /admin/login");
+        //    exit;
+        if(!User::checkLogin($inadmin)){ //se o usuario estiver logado, ele sera redirecionado para a pagina de login
+            if($inadmin){
+                header("Location: /admin/login");
+            } else {
+                header("Location: /login");
+            }
             exit;
         }
-    }
+            
+        }
 
     public static function logout(){
         //exlcui a sessão
