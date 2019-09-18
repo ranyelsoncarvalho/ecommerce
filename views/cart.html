@@ -37,37 +37,38 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    
+                                    <!--listar todos os produtos do carrinho-->
+                                    {loop="$products"}
                                     <tr class="cart_item">
                                         <td class="product-remove">
-                                            <a title="Remove this item" class="remove" href="#">×</a> 
+                                            <a title="Remove this item" class="remove" href="/cart/{$value.idproduct}/remove">×</a> <!--remover o produto-->
                                         </td>
 
-                                        <td class="product-thumbnail">
-                                            <a href="#"><img width="145" height="145" alt="poster_1_up" class="shop_thumbnail" src="/res/site/img/product-thumb-2.jpg"></a>
+                                        <td class="product-thumbnail"> <!--imagem do produto-->
+                                            <a href="/products/{$value.desurl}"><img width="145" height="145" alt="poster_1_up" class="shop_thumbnail" src="{$value.desphoto}"></a>
                                         </td>
 
-                                        <td class="product-name">
-                                            <a href="#">Ship Your Idea</a> 
+                                        <td class="product-name"> <!--nome do produto-->
+                                            <a href="/product/{$value.desurl}">{$value.desproduct}</a> 
                                         </td>
 
-                                        <td class="product-price">
-                                            <span class="amount">$700.00</span> 
+                                        <td class="product-price"> <!--preco unitario do produto-->
+                                            <span class="amount">R$ {function="formatPrice($value.vlprice)"}</span> 
                                         </td>
 
                                         <td class="product-quantity">
                                             <div class="quantity buttons_added">
-                                                <input type="button" class="minus" value="-" onclick="window.location.href = '#'">
-                                                <input type="number" size="4" class="input-text qty text" title="Qty" value="1" min="0" step="1">
-                                                <input type="button" class="plus" value="+" onclick="window.location.href = '#'">
+                                                <input type="button" class="minus" value="-" onclick="window.location.href = '/cart/{$value.idproduct}/minus'"> <!--remover apenas uma quantidade do produto-->
+                                                <input type="number" size="4" class="input-text qty text" title="Qty" value="{$value.nrqtd}" min="0" step="1"> <!--quantidade de produtos que esta dentro-->
+                                                <input type="button" class="plus" value="+" onclick="window.location.href = '/cart/{$value.idproduct}/add'"> <!--adicionar mais produtos-->
                                             </div>
                                         </td>
 
-                                        <td class="product-subtotal">
-                                            <span class="amount">$700.00</span> 
+                                        <td class="product-subtotal"> <!--subtotal do produto-->
+                                            <span class="amount">R$ {function="formatPrice($value.vltotal)"}</span> 
                                         </td>
                                     </tr>
-                                    
+                                    {/loop}
                                 </tbody>
                             </table>
 
@@ -80,7 +81,7 @@
                                     <div class="coupon">
                                         <label for="cep">CEP:</label>
                                         <input type="text" placeholder="00000-000" value="" id="cep" class="input-text" name="zipcode">
-                                        <input type="submit" formmethod="post" formaction="/cart/freight" value="CÁLCULAR" class="button">
+                                        <input type="submit" formmethod="post" formaction="/cart/freight" value="CALCULAR" class="button">
                                     </div>
 
                                 </div>

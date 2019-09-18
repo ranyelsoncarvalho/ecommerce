@@ -37,37 +37,40 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    
+                                    <!--listar todos os produtos do carrinho-->
+                                    <?php $counter1=-1;  if( isset($products) && ( is_array($products) || $products instanceof Traversable ) && sizeof($products) ) foreach( $products as $key1 => $value1 ){ $counter1++; ?>
+
                                     <tr class="cart_item">
                                         <td class="product-remove">
-                                            <a title="Remove this item" class="remove" href="#">×</a> 
+                                            <a title="Remove this item" class="remove" href="/cart/<?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/remove">×</a> <!--remover o produto-->
                                         </td>
 
-                                        <td class="product-thumbnail">
-                                            <a href="#"><img width="145" height="145" alt="poster_1_up" class="shop_thumbnail" src="/res/site/img/product-thumb-2.jpg"></a>
+                                        <td class="product-thumbnail"> <!--imagem do produto-->
+                                            <a href="/products/<?php echo htmlspecialchars( $value1["desurl"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"><img width="145" height="145" alt="poster_1_up" class="shop_thumbnail" src="<?php echo htmlspecialchars( $value1["desphoto"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"></a>
                                         </td>
 
-                                        <td class="product-name">
-                                            <a href="#">Ship Your Idea</a> 
+                                        <td class="product-name"> <!--nome do produto-->
+                                            <a href="/product/<?php echo htmlspecialchars( $value1["desurl"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"><?php echo htmlspecialchars( $value1["desproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?></a> 
                                         </td>
 
-                                        <td class="product-price">
-                                            <span class="amount">$700.00</span> 
+                                        <td class="product-price"> <!--preco unitario do produto-->
+                                            <span class="amount">R$ <?php echo formatPrice($value1["vlprice"]); ?></span> 
                                         </td>
 
                                         <td class="product-quantity">
                                             <div class="quantity buttons_added">
-                                                <input type="button" class="minus" value="-" onclick="window.location.href = '#'">
-                                                <input type="number" size="4" class="input-text qty text" title="Qty" value="1" min="0" step="1">
-                                                <input type="button" class="plus" value="+" onclick="window.location.href = '#'">
+                                                <input type="button" class="minus" value="-" onclick="window.location.href = '/cart/<?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/minus'"> <!--remover apenas uma quantidade do produto-->
+                                                <input type="number" size="4" class="input-text qty text" title="Qty" value="<?php echo htmlspecialchars( $value1["nrqtd"], ENT_COMPAT, 'UTF-8', FALSE ); ?>" min="0" step="1"> <!--quantidade de produtos que esta dentro-->
+                                                <input type="button" class="plus" value="+" onclick="window.location.href = '/cart/<?php echo htmlspecialchars( $value1["idproduct"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/add'"> <!--adicionar mais produtos-->
                                             </div>
                                         </td>
 
-                                        <td class="product-subtotal">
-                                            <span class="amount">$700.00</span> 
+                                        <td class="product-subtotal"> <!--subtotal do produto-->
+                                            <span class="amount">R$ <?php echo formatPrice($value1["vltotal"]); ?></span> 
                                         </td>
                                     </tr>
-                                    
+                                    <?php } ?>
+
                                 </tbody>
                             </table>
 
@@ -80,7 +83,7 @@
                                     <div class="coupon">
                                         <label for="cep">CEP:</label>
                                         <input type="text" placeholder="00000-000" value="" id="cep" class="input-text" name="zipcode">
-                                        <input type="submit" formmethod="post" formaction="/cart/freight" value="CÁLCULAR" class="button">
+                                        <input type="submit" formmethod="post" formaction="/cart/freight" value="CALCULAR" class="button">
                                     </div>
 
                                 </div>
