@@ -13,6 +13,9 @@ class User extends Model {
 
     //constante de encriptacao, necessaria para criptografar e descriptografar
     const SECRET = "HcodePhp7_Secret";
+    
+    //constante para a variavel de erro na sessao
+    const ERROR = "UserError";
 
     //metodo para buscar os dados da sessao e verificar se o usuario esta logado
     public static function getFromSession(){
@@ -32,7 +35,7 @@ class User extends Model {
     //metodo para verificar se o usuario esta logado
     public static function checkLogin($inadmin = true){
 
-        if(!isset($_SESSION[User::SESSION]) 
+        if(!isset($_SESSION[User::SESSION]) //se ela nao esta definida eh sinal que ele nao esta logado
             || 
             !$_SESSION[User::SESSION] 
             ||!(int)$_SESSION[User::SESSION]["iduser"] > 0 //verificar se carrega algum usuario
@@ -40,26 +43,26 @@ class User extends Model {
             //nao esta logado
             return false;
         } else {
-            if ($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true) {
+            if ($inadmin === true && (bool)$_SESSION[User::SESSION]['inadmin'] === true) { //fazendo uma verificacao do usuario da administracao
                 return true;
             } //verifica se e uma rota da administracao
-            else if ($inadmin === false) {
+            else if ($inadmin === false) { //o usuario pode visualizar a parte de cliente
                 return true;
             } else {
-                return false;
+                return false; //usuario nao estah logado
             }
         }
 
 
     }
 
-    //metodo do login
+    //metodo do login do sistema
     public static function login($login, $password){
         
         //verificar se ele existe no banco
         $sql = new Sql();
 
-        $results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :LOGIN", array(
+        $results = $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b ON a.idperson = b.idperson WHERE a.deslogin = :LOGIN", array(
             //fazer o bind dos parâmetros
             ":LOGIN"=>$login
         ));
@@ -105,9 +108,9 @@ class User extends Model {
         //    exit;
         if(!User::checkLogin($inadmin)){ //se o usuario estiver logado, ele sera redirecionado para a pagina de login
             if($inadmin){
-                header("Location: /admin/login");
+                header("Location: /admin/login"); //redireciona para o login administrativo
             } else {
-                header("Location: /login");
+                header("Location: /login"); //redireciona par ao login do cliente
             }
             exit;
         }
@@ -116,7 +119,7 @@ class User extends Model {
 
     public static function logout(){
         //exlcui a sessão
-        $_SESSION[User::SESSION] == NULL;
+        $_SESSION[User::SESSION] = NULL;
     }
 
     public static function listAll(){ //metodo para listar todos os usuarios cadastrados
@@ -248,6 +251,25 @@ class User extends Model {
         }
 
     }
+
+
+    //metodos para as variaveis de sessao de erro
+    public static function setError($msg)
+	{
+		$_SESSION[User::ERROR] = $msg;
+    }
+    
+	public static function getError()
+	{
+		$msg = (isset($_SESSION[User::ERROR]) && $_SESSION[User::ERROR]) ? $_SESSION[User::ERROR] : '';
+		User::clearError();
+		return $msg;
+    }
+    
+	public static function clearError()
+	{
+		$_SESSION[User::ERROR] = NULL;
+	}
 
 }
 

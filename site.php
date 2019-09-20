@@ -7,6 +7,8 @@ use \Hcode\Page;
 use \Hcode\Model\Product;
 use \Hcode\Model\Category;
 use \Hcode\Model\Cart;
+use \Hcode\Model\Address;
+use \Hcode\Model\User;
 
 $app->get('/', function() { //rota principal (home do site)
     
@@ -188,6 +190,77 @@ $app->post("/cart/freight", function(){
 	header("Location: /cart");
 	exit;
 
+});
+
+//rota para o login do usuario no sistema de compras, deixa apenas se o usuario estiver logado --> parte de checkout
+$app->get("/checkout", function(){
+
+	//fazer a validacao do login
+	User::verifyLogin(false); //identificar se nao eh uma rota da administracao
+
+	//pegar o carrinho que esta na sessao
+	$cart = Cart::getFromSession();
+
+	//pegar o endereco
+	$address = new Address(); //classe Address
+
+	//criar a pagina do html
+	$page = new Page();
+
+	//chamar o template do html
+	$page->setTpl("checkout", [
+		//passar as variaveis necessarias para renderizar no proprio html
+		'cart'=>$cart->getValues(), //a variavel 'cart' vai receber o carrinho, passando os valores dele por meio do 'getValues()'
+		'address'=>$address->getValues()
+	]); //chamando o template "checkout.html"
+
+});
+
+//rota para o login do SITE, para o cliente realizar a compra do produto
+$app->get("/login", function(){
+
+	//criar a pagina
+	$page = new Page();
+
+
+	//chamar o template do login do cliente
+	$page->setTpl("login",[
+		//passar a variavel do erro ao template
+		'error'=>User::getError() //para que a funcao possa retornar o erro 
+	]);
+
+});
+
+//rota para acessar a pagina de login via post, vindo do formulario HTML
+$app->post("/login", function(){
+
+	//apresentar o erro na tela para o usuario, caso o login falhe
+	try{
+
+		//apenas verificar o login do usuario
+		User::login($_POST['login'], $_POST['password']); //o metodo eh estatico, por isso nao eh feito o "new", passar o login do usuario via post
+	
+	} catch (Exception $e) {
+		User::setError($e->getMessage());
+	}
+
+	
+	//redirecionar para a tela do checkout;
+	header("Location: /checkout");
+	exit;
+
+
+});
+
+//rota para efetuar o logout do cliente na loja
+$app->get("/logout", function(){
+
+	//chamar o metodo que realizar o logout
+	User::logout();
+
+	//redireciona para a tela de login
+	header("Location: /login");
+	exit;
 
 });
 
