@@ -35,7 +35,7 @@ class Mailer {
 
     //passar os dados para o template - cria as variaveis dentro do template
     foreach ($data as $key => $value) {
-        $this->tpl->assign($key, $value); //atribuição de variaveis que irão aparecer no template
+        $tpl->assign($key, $value); //atribuição de variaveis que irão aparecer no template
     }
 
     $html = $tpl->draw($tplName, true);

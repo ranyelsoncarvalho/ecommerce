@@ -17,6 +17,9 @@ class User extends Model {
     //constante para a variavel de erro na sessao
     const ERROR = "UserError";
 
+    //constante para a variavel de erro do usuario no cadastro
+    const ERROR_REGISTER = "UserErrorRegister";
+
     //metodo para buscar os dados da sessao e verificar se o usuario esta logado
     public static function getFromSession(){
         $user = new User();
@@ -135,7 +138,7 @@ class User extends Model {
         $results = $sql->select("CALL sp_users_save(:desperson, :deslogin, :despassword, :desemail, :nrphone, :inadmin)", array(
             ":desperson"=>$this->getdesperson(), //associacao com as chaves
             ":deslogin"=>$this->getdeslogin(),
-            ":despassword"=>$this->getdespassword(),
+            ":despassword"=>User::getPasswordHash($this->getdespassword()),
             ":desemail"=>$this->getdesemail(),
             ":nrphone"=>$this->getnrphone(),
             ":inadmin"=>$this->getinadmin()
@@ -164,7 +167,7 @@ class User extends Model {
             ":iduser"=>$this->getiduser(), //para atualizar o registro no BD
             ":desperson"=>$this->getdesperson(), //associacao com as chaves
             ":deslogin"=>$this->getdeslogin(),
-            ":despassword"=>$this->getdespassword(),
+            ":despassword"=>User::getPasswordHash($this->getdespassword()),
             ":desemail"=>$this->getdesemail(),
             ":nrphone"=>$this->getnrphone(),
             ":inadmin"=>$this->getinadmin()
@@ -269,7 +272,46 @@ class User extends Model {
 	public static function clearError()
 	{
 		$_SESSION[User::ERROR] = NULL;
-	}
+    }
+    
+    //metodo para variaveis de erro
+    public static function setErrorRegister($msg) {
+
+        $_SESSION[User::ERROR_REGISTER] = $msg;
+
+    }
+
+    //pegar o erro da sessao
+    public static function getErrorRegister()
+	{
+		$msg = (isset($_SESSION[User::ERROR_REGISTER]) && $_SESSION[User::ERROR_REGISTER]) ? $_SESSION[User::ERROR_REGISTER] : '';
+		User::clearErrorRegister(); //limpar o erro da sessao
+		return $msg;
+    }
+    
+    public static function clearErrorRegister() //metodo para limpar o erro da sessao
+	{
+		$_SESSION[User::ERROR_REGISTER] = NULL;
+    }
+    
+    //verificar se jah existe determinado login, para impedir de dois usuarios com o mesmo login
+    public static function checkLoginExist($login)
+	{
+		$sql = new Sql();
+		$results = $sql->select("SELECT * FROM tb_users WHERE deslogin = :deslogin", [
+			':deslogin'=>$login
+		]);
+		return (count($results) > 0); //se retornar maior que 0, quer dizer que tem ja tem um usuario com esse login
+    }
+    
+    //metodo para adicionar o hash na senha do usuario ao criar a conta
+    public static function getPasswordHash($password) 
+    {   
+        return password_hash($password, PASSWORD_DEFAULT, [
+            'cost'=>12
+        ]);
+    }
+
 
 }
 

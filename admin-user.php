@@ -78,7 +78,7 @@ $app->post('/admin/users/create', function(){
 
 	$_POST['despassword'] = password_hash($_POST["despassword"], PASSWORD_DEFAULT, [
  
-		"cost"=>12
+		"cost"=>12 //documentacao do php para gerar o hash da senha
 		
 		]);
 

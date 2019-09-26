@@ -226,7 +226,9 @@ $app->get("/login", function(){
 	//chamar o template do login do cliente
 	$page->setTpl("login",[
 		//passar a variavel do erro ao template
-		'error'=>User::getError() //para que a funcao possa retornar o erro 
+		'error'=>User::getError(), //para que a funcao possa retornar o erro 
+		'errorRegister'=>User::getErrorRegister(), //metodo para trazer o erro quando o cliente esta fazendo o cadastro
+		'registerValues'=>(isset($_SESSION['registerValues'])) ? $_SESSION['registerValues'] : ['name'=>'', 'email'=>'', 'phone'=>''] //funcao para guardar os dados na sessao, antes de enviar para o banco de dados
 	]);
 
 });
@@ -260,6 +262,74 @@ $app->get("/logout", function(){
 
 	//redireciona para a tela de login
 	header("Location: /login");
+	exit;
+
+});
+
+//rota para fazer o cadastro do cliente no site da loja
+$app->post("/register", function(){
+
+
+	//para nao perder os dados preenchido caso falte algum dado na hora do cadastro
+	//solucao: colocao o dado da sessao
+	$_SESSION['registerValues'] = $_POST;
+
+	//antes de enviar para o banco eh necessario fazer algumas validações
+	//verificar se o nome foi enviado
+	if (!isset($_POST['name']) || $_POST['name'] == ''){
+
+		User::setErrorRegister("Preencha o seu nome."); //metodo para apresentar uma msg ao usuario
+		header("Location: /login");
+		exit;
+
+	}
+
+	//verificar se o email foi digitado
+	if (!isset($_POST['email']) || $_POST['email'] == ''){
+
+		User::setErrorRegister("Preencha o seu email."); //metodo para apresentar uma msg ao usuario
+		header("Location: /login");
+		exit;
+
+	}
+
+	//verificar se a senha foi digitada
+	if (!isset($_POST['password']) || $_POST['password'] == ''){
+
+		User::setErrorRegister("Preencha a senha."); //metodo para apresentar uma msg ao usuario
+		header("Location: /login");
+		exit;
+
+	}
+
+	//fazer a verificacao para permitir que o login seja unico
+	if (User::checkLoginExist($_POST['email']) === true) {
+		User::setErrorRegister("Este endereço de e-mail já está sendo usado por outro usuário"); //metodo para apresentar uma msg ao usuario
+		header("Location: /login");
+		exit;
+	}
+	
+	
+	//receber os dados do formulario para criar o usuario
+	$user = new User();
+
+	$user->setData([ //array para receber os dados e fazer o save no banco
+		'inadmin'=>0,//forca o inadmin ser 0 para não ser administrador
+		'deslogin'=>$_POST['email'], //campos que estao vindo do formulario HTML
+		'desperson'=>$_POST['name'],
+		'desemail'=>$_POST['email'],
+		'despassword'=>$_POST['password'],
+		'nrphone'=>$_POST['phone']
+	]);
+
+	$user->save(); //metodo para salvar o usuario no bd
+
+
+	//para fazer a autenticacao do usuario apos ele realizar o cadastrdo
+	User::login($_POST['email'], $_POST['password']);
+
+	//redireciona para a tela do checkout
+	header("Location: /checkout");
 	exit;
 
 });
