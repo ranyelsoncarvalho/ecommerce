@@ -304,10 +304,12 @@ $app->post("/register", function(){
 
 	//fazer a verificacao para permitir que o login seja unico
 	if (User::checkLoginExist($_POST['email']) === true) {
-		User::setErrorRegister("Este endereço de e-mail já está sendo usado por outro usuário"); //metodo para apresentar uma msg ao usuario
+		User::setErrorRegister("Este e-mail ja esta cadastrado."); //metodo para apresentar uma msg ao usuario
 		header("Location: /login");
 		exit;
 	}
+
+	$_SESSION['registerValues'] = NULL; // Zerando a sessão para limpar os dados do formulário.
 	
 	
 	//receber os dados do formulario para criar o usuario
@@ -330,6 +332,89 @@ $app->post("/register", function(){
 
 	//redireciona para a tela do checkout
 	header("Location: /checkout");
+	exit;
+
+});
+
+
+//rota para acessar Minha Conta - profile do usuario
+$app->get("/profile", function(){
+
+	//eh necessario o usuario estar logado --> passa como "false" para indicar que nao e administrativo
+	User::verifyLogin(false);
+
+
+	//recuperar dados do usuario que esta na sessao
+	$user = User::getFromSession();
+
+	//cria o template
+	$page = new Page();
+
+	//chama o novo template: profile.html
+	$page->setTpl("profile", [
+		//passar as informacoes que serao carregadas no template: usuario, msg de erro e demais informacoes
+		'user'=>$user->getValues(),
+		'profileMsg'=>User::getSuccess(), //passar a mensagem de sucesso
+		'profileError'=>User::getError() //passando o erro para o template
+	]);
+	
+
+});
+
+//rota para realizar as alteracoes nos dados cadastrados do usuario logado (edicao)
+$app->post("/profile", function(){
+
+	//eh necessario o usuario estar logado --> passa como "false" para indicar que nao e administrativo
+	User::verifyLogin(false);
+
+	//fazer algumas validacoes para nao deixar os campos em branco
+	if(!isset($_POST['desperson']) || $_POST['desperson'] === ''){
+		//apresentar as mensagens de erro
+		User::setError("Preencha o seu nome."); //agora e necessario passar o erro para o template
+		header('Location: /profile'); //redireciona para a pagina do perfil
+		exit;
+	}
+
+	if(!isset($_POST['desemail']) || $_POST['desemail'] === ''){
+		//apresentar as mensagens de erro
+		User::setError("Preencha o seu email."); //agora e necessario passar o erro para o template
+		header('Location: /profile'); //redireciona para a pagina do perfil
+		exit;
+	}
+
+	//recuperar dados do usuario que esta na sessao
+	$user = User::getFromSession();
+
+	//verificar se o novo login ja existe na base de dados
+	if($_POST['desemail'] !== $user->getdesemail()){
+		//significa que o usuario alterou o email, lembrando que o email deve ser unico
+		if (User::checkLoginExist($_POST['desemail']) === true){
+			User::setError("Este endereço já é cadastrado"); //agora e necessario passar o erro para o template
+			header('Location: /profile'); //redireciona para a pagina do perfil
+			exit;
+		}
+	}
+
+
+	//nao permitir que o usuario possa alterar o INADMIN para se tornar ADM
+	$_POST['inadmin'] = $user->getinadmin();
+	$_POST['despassword'] = $user->getdespassword();
+	$_POST['deslogin'] = $_POST['desemail'];
+
+	//instanciar os dados para fazer a alteracao
+	$user->setData($_POST);
+
+	//metodo para atualizar os dados alterados
+	$user->update();
+
+	//mostrar os dados alterados no template
+	$_SESSION[User::SESSION] = $user->getValues();
+
+	//passar a mensagem de sucesso para a alteracao do cadastrado
+	User::setSuccess("Dados alterados com sucesso!");
+
+	//retornar para a pagina do formulario
+	header('Location: /profile');
 	exit;
 
 });

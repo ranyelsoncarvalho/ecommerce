@@ -20,6 +20,9 @@ class User extends Model {
     //constante para a variavel de erro do usuario no cadastro
     const ERROR_REGISTER = "UserErrorRegister";
 
+    //constante para a variavel de sucesso na edicacao dos dados para usuario
+    const SUCCESS = "UserSuccess";
+
     //metodo para buscar os dados da sessao e verificar se o usuario esta logado
     public static function getFromSession(){
         $user = new User();
@@ -123,6 +126,7 @@ class User extends Model {
     public static function logout(){
         //exlcui a sessão
         $_SESSION[User::SESSION] = NULL;
+
     }
 
     public static function listAll(){ //metodo para listar todos os usuarios cadastrados
@@ -167,7 +171,7 @@ class User extends Model {
             ":iduser"=>$this->getiduser(), //para atualizar o registro no BD
             ":desperson"=>$this->getdesperson(), //associacao com as chaves
             ":deslogin"=>$this->getdeslogin(),
-            ":despassword"=>User::getPasswordHash($this->getdespassword()),
+            ":despassword"=>$this->getdespassword(),
             ":desemail"=>$this->getdesemail(),
             ":nrphone"=>$this->getnrphone(),
             ":inadmin"=>$this->getinadmin()
@@ -274,6 +278,25 @@ class User extends Model {
 		$_SESSION[User::ERROR] = NULL;
     }
     
+    //metodos para as variaveis de sessao de erro: SUCCESS
+    public static function setSuccess($msg)
+	{
+		$_SESSION[User::SUCCESS] = $msg;
+    }
+    
+	public static function getSuccess()
+	{
+		$msg = (isset($_SESSION[User::SUCCESS]) && $_SESSION[User::SUCCESS]) ? $_SESSION[User::SUCCESS] : '';
+		User::clearSuccess();
+		return $msg;
+    }
+    
+	public static function clearSuccess()
+	{
+		$_SESSION[User::SUCCESS] = NULL;
+    }
+
+
     //metodo para variaveis de erro
     public static function setErrorRegister($msg) {
 
