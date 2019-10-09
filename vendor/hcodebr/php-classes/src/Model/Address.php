@@ -65,19 +65,17 @@ class Address extends Model {
         $sql = new Sql();
 
         //chama o meotodo select para realizar a operacao de salvar os dados no banco
-        $results = $sql->select("CALL sp_addresses_save(:idaddress, :idperson, :desaddress, :descomplement, :descity,
-                :descountry, :deszipcode, :desdistrict, :desstate)", [
-                //bind dos parametros
-                ':idaddress'=>$this->getidaddress(),
-                ':idperson'=>$this->getidperson(),
-                ':desaddress'=>$this->getdesaddress(),
-                ':descomplement'=>$this->getdescomplement(),
-                ':descity'=>$this->getdescity(),
-                ':descountry'=>$this->getdescountry(),
-                ':deszipcode'=>$this->getdeszipcode(),
-                ':desdistrict'=>$this->getdesdistrict(),
-                ':desstate'=>$this->getdesstate()
-                ]);
+        $results = $sql->select("CALL sp_addresses_save(:idaddress, :idperson, :desaddress, :descomplement, :descity, :desstate, :descountry, :deszipcode, :desdistrict)", [
+			':idaddress'=>$this->getidaddress(),
+			':idperson'=>$this->getidperson(),
+			':desaddress'=>$this->getdesaddress(),
+			':descomplement'=>$this->getdescomplement(),
+			':descity'=>$this->getdescity(),
+			':desstate'=>$this->getdesstate(),
+			':descountry'=>$this->getdescountry(),
+			':deszipcode'=>$this->getdeszipcode(),
+			':desdistrict'=>$this->getdesdistrict()
+		]);
         
         //verificar se a variavel $results retornou alguma coisa
         if(count($results)>0){

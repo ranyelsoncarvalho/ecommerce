@@ -9,6 +9,8 @@ use \Hcode\Model\Category;
 use \Hcode\Model\Cart;
 use \Hcode\Model\Address;
 use \Hcode\Model\User;
+use \Hcode\Model\Order;
+use \Hcode\Model\OrderStatus;
 
 $app->get('/', function() { //rota principal (home do site)
     
@@ -314,8 +316,30 @@ $app->post("/checkout", function(){
 	//utiliza o metodo para salvar
 	$address->save();
 
-	//redirecionar para a pagina de pagamento
-	header("Location: /order");
+
+	//pegar o carrinho da sessao
+	$cart = Cart::getFromSession();
+
+	//pegar o valor total do carrinho
+	$totals = $cart->getCalculateTotal();
+
+	//apos salvar os dados do carrinho, e necessario gerar a ordem de servico
+	$order = new Order(); //chamando a classe Order
+
+	//carregar os dados do pedido
+	$order->setData([
+		'idcart'=>$cart->getidcart(),
+		'idaddress'=>$address->getaddress(),
+		'iduser'=>$user->getiduser(),
+		'idstatus'=>OrderStatus::EM_ABERTO,
+		'vltotal'=>$totals['vlprice'] + $cart->getvlfreight()
+	]);
+
+	//salvar o pedido
+	$order->save();
+
+	//redirecionar para a pagina de pagamento e passar o id do pedido
+	header("Location: /order/".$order->getidorder());
 	exit;
 
 });
@@ -523,7 +547,33 @@ $app->post("/profile", function(){
 
 });
 
+//rota para fazer o fechamento do pedido: order --> essa rota tem ligacao com a rota do checkout
+$app->get("/order/:idorder", function($idorder){
 
+	//verificar se o usuario esta logado
+	User::verifyLogin(false); //passa false devido a ser pagina do site e nao do administrador
+
+	//instanciar o pedido
+	$order = new Order();
+
+	//carregar o pedido pelo ID
+	$order->get((int)$idorder);
+
+	//criar a pagina do template
+	$page = new Page();
+
+	//definir o template que será chamado
+	$page->setTpl("payment", [
+		'order'=>$order->getValues()
+	]);
+
+
+});
+
+//rota para o boleto
+$app->get("/boleto/:idorder", function($idorder){
+
+});
 
 
 ?>
