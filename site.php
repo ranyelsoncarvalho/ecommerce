@@ -321,7 +321,7 @@ $app->post("/checkout", function(){
 	$cart = Cart::getFromSession();
 
 	//pegar o valor total do carrinho
-	$totals = $cart->getCalculateTotal();
+	$cart->getCalculateTotal();
 
 	//apos salvar os dados do carrinho, e necessario gerar a ordem de servico
 	$order = new Order(); //chamando a classe Order
@@ -332,7 +332,7 @@ $app->post("/checkout", function(){
 		'idaddress'=>$address->getidaddress(),
 		'iduser'=>$user->getiduser(),
 		'idstatus'=>OrderStatus::EM_ABERTO,
-		'vltotal'=>$totals['vlprice'] + $cart->getvlfreight() 
+		'vltotal'=>$cart->getvltotal() 
 	]);
 
 	//salvar o pedido
@@ -587,6 +587,7 @@ $app->get("/boleto/:idorder", function($idorder){
 	$taxa_boleto = 5.00;
 	$data_venc = date("d/m/Y", time() + ($dias_de_prazo_para_pagamento * 86400));  // Prazo de X dias OU informe data: "13/04/2006"; 
 	$valor_cobrado = formatPrice($order->getvltotal()); // Valor - REGRA: Sem pontos na milhar e tanto faz com "." ou "," ou com 1 ou 2 ou sem casa decimal
+	$valor_cobrado = str_replace(".", "", $valor_cobrado);
 	$valor_cobrado = str_replace(",", ".",$valor_cobrado);
 	$valor_boleto=number_format($valor_cobrado+$taxa_boleto, 2, ',', '');
 
@@ -648,6 +649,55 @@ $app->get("/boleto/:idorder", function($idorder){
 
 	//include("include/funcoes_itau.php"); 
 	//include("include/layout_itau.php");
+
+});
+
+//rota para a area minha conta, carregar os pedidos
+$app->get("/profile/orders", function(){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin(false); //false para indicar que nao e da administracao
+	
+	//classe User e carregar o usuario que esta na sessao
+	$user = User::getFromSession();
+
+	//carregar a classe page para gerar o template
+	$page = new Page();
+
+	//definir o template: profile-orders
+	$page->setTpl("profile-orders", [
+		'orders'=>$user->getOrders() //variavel: orders --> que sera chamada no template --> getOrders(trazer os pedidos do usuario)
+	]);
+
+});
+
+//rota para os detalhes do pedido
+$app->get("/profile/orders/:idorder", function($idorder){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin(false); //false para indicar que nao e da administracao
+
+	//carregar o pedido
+	$order = new Order();
+	$order->get((int)$idorder);
+
+	//carregar os dados do carrinho
+	$cart = new Cart();
+	$cart->get((int)$order->getidcart());
+
+	//forcar o calculo do produto
+	$cart->getCalculateTotal();
+
+	//carregar o template
+	$page = new Page();
+
+	//carregar o pedido
+	$page->setTpl("profile-orders-detail", [ //as variaveis sao utilizadas no template: profile-orders-detail.html
+		'order'=>$order->getValues(), //carregar os detalhes do pedido
+		'cart'=>$cart->getValues(), //carregar os dados do carrinho salvo
+		'products'=>$cart->getProducts() //carregar os produtos
+	]);
+
 
 });
 
