@@ -375,8 +375,8 @@ $app->post("/login", function(){
 	}
 
 	
-	//redirecionar para a tela do checkout;
-	header("Location: /checkout");
+	//redirecionar para a tela do perfil do usuario;
+	header("Location: /profile");
 	exit;
 
 
@@ -605,7 +605,7 @@ $app->get("/boleto/:idorder", function($idorder){
 
 	// INFORMACOES PARA O CLIENTE
 	$dadosboleto["demonstrativo1"] = "Pagamento de Compra na Loja Hcode E-commerce";
-	$dadosboleto["demonstrativo2"] = "Taxa bancária - R$ 0,00";
+	$dadosboleto["demonstrativo2"] = "Taxa bancária - R$ 5,00";
 	$dadosboleto["demonstrativo3"] = "";
 	$dadosboleto["instrucoes1"] = "- Sr. Caixa, cobrar multa de 2% após o vencimento";
 	$dadosboleto["instrucoes2"] = "- Receber até 10 dias após o vencimento";
@@ -701,5 +701,82 @@ $app->get("/profile/orders/:idorder", function($idorder){
 
 });
 
+//rota para alterar a senha do usuario no site
+$app->get("/profile/change-password", function(){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin(false); //false pois trata de um user da pagina do site
+
+	//cria a classe Page
+	$page = new Page();
+
+	$page->setTpl("profile-change-password", [
+		//adicionar as variaveis que serao carregadas no template
+		'changePassError'=>User::getError(), //metodos de erro de sessao
+		'changePassSuccess'=>User::getSuccess()
+	]); //definir o template a ser chamado
+
+});
+
+
+//rota para alterar a senha do site, dados vindo do formulario via POST
+$app->post("/profile/change-password", function(){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin(false); //false pois trata de um user da pagina do site
+
+	//verificar se o usuario digitou a senha
+	if(!isset($_POST['current_pass']) || $_POST['current_pass'] === ''){ //se o usuario nao digitou ou ela veio vazia
+		//informar o erro ao usuario
+		User::setError("Digite a senha atual."); //metodo pertencente a classe usuario
+		header("Location: /profile/change-password"); //redireciona para a rota atual
+		exit;
+	}
+
+	//verificar se o usuario digitou a nova senha
+	if(!isset($_POST['new_pass']) || $_POST['new_pass'] === ''){
+		//informe o erro ao usuario
+		User::setError("Digite a nova senha.");
+		header("Location: /profile/change-password"); //redireciona para a rota atual
+		exit;
+	}
+
+	//verificar se o usuario confirmou a nova senha
+	if(!isset($_POST['new_pass_confirm']) || $_POST['new_pass_confirm'] === ''){
+		//informe o erro ao usuario
+		User::setError("Confirme a nova senha.");
+		header("Location: /profile/change-password"); //redireciona para a rota atual
+		exit;
+	}
+
+	//verificar se a nova senha e diferente da senha atual
+	if($_POST['current_pass'] === $_POST['new_pass']){
+		//informe o erro ao usuario
+		User::setError("A sua nova senha deve ser diferente da atual.");
+		header("Location: /profile/change-password"); //redireciona para a rota atual
+		exit;
+	}
+
+	//verificar se a senha esta correta do usuario
+	$user = User::getFromSession(); //pegar o usuario da sessao
+	if(!password_verify($_POST['current_pass'], $user->getdespassword())){ //verifica a senha digitada com a senha que esta salva no BD
+		//informe o erro ao usuario
+		User::setError("Senha atual invalida.");
+		header("Location: /profile/change-password"); //redireciona para a rota atual
+		exit;
+	} 
+
+	//se passar por todos os casos acima, bastar fazer o update (alterar a senha) com o metodo do hash criado
+	$user->setdespassword(User::getPasswordHash($_POST['new_pass']));
+
+	//fazer a atualizacao na tabela
+	$user->update();
+
+	//apresentar a mensagem da senha alterada com sucesso
+	User::setSuccess("Senha alterada com sucesso!.");
+	header("Location: /profile/change-password"); //redireciona para a rota atual
+	exit;
+
+});
 
 ?>

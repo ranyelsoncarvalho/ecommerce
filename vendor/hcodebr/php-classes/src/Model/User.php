@@ -87,7 +87,7 @@ class User extends Model {
             $user = new User();
             $user->setData($data);
 
-            //e necessario guardar os dados em uma seção, para verificar se esta logado atribuir a uma seção, senão redireciona para a pagina de login
+            //e necessario guardar os dados em uma sessão, para verificar se esta logado atribuir a uma seção, senão redireciona para a pagina de login
             $_SESSION[User::SESSION] = $user->getValues();
 
             return $user;
