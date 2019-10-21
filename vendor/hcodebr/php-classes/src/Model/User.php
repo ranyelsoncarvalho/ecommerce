@@ -186,7 +186,7 @@ class User extends Model {
         $sql = new Sql();
 
         $sql->query("CALL sp_users_delete(:iduser)", array( //realiza a exclusao por meio de uma procedure
-            ":iduser"=>$this->getiduser()
+            ":iduser"=>$this->getiduser() //em um objeto dentro da propria classe
         ));
        
 

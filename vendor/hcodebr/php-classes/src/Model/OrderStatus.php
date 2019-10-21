@@ -13,6 +13,17 @@ class OrderStatus extends Model { //classe para trazer o status dos pedidos gera
     const PAGO = 3;
     const ENTREGUE = 4;   
 
+
+    //metodo para trazer todos os status que ja estao cadastrados no BD
+    public static function listAll(){
+
+        //informacoes do banco de dados
+        $sql = new Sql();
+
+        return $sql->select("SELECT * FROM tb_ordersstatus ORDER BY desstatus"); //consulta para retornar os status cadastrados no BD
+
+    }
+
 }
 
 

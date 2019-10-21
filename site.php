@@ -388,6 +388,9 @@ $app->get("/logout", function(){
 	//chamar o metodo que realizar o logout
 	User::logout();
 
+	//remover a sessao do carrinho do usuario
+	Cart::removeFromSession();
+	session_regenerate_id();
 	//redireciona para a tela de login
 	header("Location: /login");
 	exit;

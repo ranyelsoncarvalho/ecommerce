@@ -358,7 +358,12 @@ class Cart extends Model {
         $this->setvlsubtotal($totals['vlprice']);
         $this->setvltotal($totals['vlprice'] + (float)$this->getvlfreight()); //calcular o valor do produto com o frete
 
-    } 
+    }
+    
+    //metodo para remover a sessao do carrinho do usuario, quando ele efetua o logout
+    public static function removeFromSession(){
+        $_SESSION[Cart::SESSION] = NULL;
+    }
 
 }
 

@@ -11,6 +11,9 @@ function formatPrice($vlPrice) { //formatar o preco dos produtos que estao carre
 
 //essa funcao sera dentro do template
 
+function formatDate($date){ //funcao para formatar a data do pedido
+    return date('d/m/Y', strtotime($date));
+} 
 
 //verificar o login
 function checkLogin($inadmin = true){

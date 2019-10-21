@@ -259,17 +259,7 @@ desired effect
         <li><a href="/admin/users"><i class="fa fa-users"></i> <span>Usuários</span></a></li> <!--menu de usuarios, passa a rotae acessa via get-->
         <li><a href="/admin/categories"><i class="fa fa-link"></i> <span>Categorias</span></a></li> <!--menu de categorias-->
         <li><a href="/admin/products"><i class="fa fa-link"></i> <span>Produtos</span></a></li> <!--menu de produtos, passa a rota para listar todos os produtos-->
-        <li class="treeview">
-          <a href="#"><i class="fa fa-link"></i> <span>Multilevel</span>
-            <span class="pull-right-container">
-              <i class="fa fa-angle-left pull-right"></i>
-            </span>
-          </a>
-          <ul class="treeview-menu">
-            <li><a href="#">Link in level 2</a></li>
-            <li><a href="#">Link in level 2</a></li>
-          </ul>
-        </li>
+        <li><a href="/admin/orders"><i class="fa fa-shopping-cart"></i> <span>Pedidos</span></a></li> <!--menu de pedidos-->
       </ul>
       <!-- /.sidebar-menu -->
     </section>

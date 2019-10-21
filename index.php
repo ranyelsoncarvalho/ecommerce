@@ -24,6 +24,7 @@ require_once("admin-user.php"); //rotas do usuario administrativo
 require_once("admin-categories.php");
 require_once("admin-products.php");
 require_once("functions.php"); //funcoes que serao usadas no template
+require_once("admin-orders.php");
 
 $app->run(); //rodar a aplicação
 

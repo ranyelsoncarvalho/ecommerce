@@ -41,7 +41,7 @@ class Sql {
 
 	}
 
-	public function query($rawQuery, $params = array()) //executa alguma consulta no BD
+	public function query($rawQuery, $params = array()) //executa alguma consulta/exclusao no BD
 	{
 
 		$stmt = $this->conn->prepare($rawQuery);
