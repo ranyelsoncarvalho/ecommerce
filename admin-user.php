@@ -11,7 +11,32 @@ $app->get('/admin/users', function(){
 	//verificar se o usuario esta logado no sistema
 	User::verifyLogin(); //metodo para verificar se o usuario esta logado ou nao
 
-	$users = User::listAll(); //metodo para listar todos os usuarios cadastrados
+	//$users = User::listAll(); //metodo para listar todos os usuarios cadastrados
+
+	$search = (isset($_GET['search'])) ? $_GET['search'] : ""; //variavel para fazer a busca de usuarios no portal admin
+	$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;//verificar se a pagina foi definida
+	
+	//filtro para retornar os usuarios da busca
+	if($search!=''){
+		$pagination = User::getPageSearch($search, $page); //metodo para a paginacao de usuarios com a busca
+	}else {
+		$pagination = User::getPage($page); //metodo para a paginacao de usuarios sem a busca
+	}
+	
+
+	//montar as paginas
+	$pages = [];
+
+	//percorrer e resultar a paginacao
+	for ($x=0; $x < $pagination['pages']; $x++){
+		array_push($pages, [
+			'href'=>'/admin/users?'.http_build_query([
+				'page'=>$x+1,
+				'search'=>$search
+			]), //fazer com que a paginacao continue na proxima pagina
+			'text'=>$x+1 //texto a ser carregado na busca	(numero da pagina)
+		]);
+	}
 
 
 	//listar todos os usuarios
@@ -19,7 +44,9 @@ $app->get('/admin/users', function(){
 	
 	//passar os dados que vem do banco para o template
 	$page->setTpl('users', array(
-		"users"=>$users
+		"users"=>$pagination['data'],
+		"search"=>$search, //realiza a busca de usuarios
+		"pages"=>$pages //variavel para a paginacao
 	)); //nome do template a ser utilizado
 });
 

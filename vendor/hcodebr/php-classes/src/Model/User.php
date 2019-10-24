@@ -357,6 +357,65 @@ class User extends Model {
         return $results;
     }
 
+    //metodo para a paginacao de usuarios
+    public static function getPage($page = 1, $itemPerPage = 3) { //$page = numero da pagina atual; $itemPerPage = numero de itens a serem carregados na pagina
+        
+        $start = ($page - 1) * $itemPerPage; //onde sera iniciada a query
+
+        //inicia a instancia SQL
+        $sql = new Sql();
+
+        //realiza a query no banco de dados: sql_calc_foun_rows --> calcula quantas linhas foram retornadas
+        $results = $sql->select("SELECT SQL_CALC_FOUND_ROWS * 
+            FROM tb_users a 
+            INNER JOIN tb_persons b 
+            USING (idperson) 
+            ORDER BY b.desperson
+            LIMIT $start, $itemPerPage;");
+
+        //numero de linhas retornadas
+        $resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
+        
+        return [
+            'data'=>$results, //todas as linhas resultadas da consulta
+            'total'=>(int)$resultTotal[0]['nrtotal'], //numero total de registros
+            'pages'=>ceil($resultTotal[0]['nrtotal'] / $itemPerPage) //numero total de paginas
+        ];
+
+
+    }
+
+    //metodo para a paginacao de usuarios com a variavel de busca
+    public static function getPageSearch($search, $page = 1, $itemPerPage = 3) { //$page = numero da pagina atual; $itemPerPage = numero de itens a serem carregados na pagina
+        
+        $start = ($page - 1) * $itemPerPage; //onde sera iniciada a query
+
+        //inicia a instancia SQL
+        $sql = new Sql();
+
+        //realiza a query no banco de dados: sql_calc_foun_rows --> calcula quantas linhas foram retornadas
+        $results = $sql->select("SELECT SQL_CALC_FOUND_ROWS * 
+            FROM tb_users a 
+            INNER JOIN tb_persons b USING (idperson) 
+            WHERE b.desperson LIKE :search OR b.desemail = :search OR a.deslogin LIKE :search 
+            ORDER BY b.desperson
+            LIMIT $start, $itemPerPage;", [
+                //bind do parametro de busca
+                ':search'=>'%'.$search.'%'
+            ]);
+
+        //numero de linhas retornadas
+        $resultTotal = $sql->select("SELECT FOUND_ROWS() AS nrtotal;");
+        
+        return [
+            'data'=>$results, //todas as linhas resultadas da consulta
+            'total'=>(int)$resultTotal[0]['nrtotal'], //numero total de registros
+            'pages'=>ceil($resultTotal[0]['nrtotal'] / $itemPerPage) //numero total de paginas
+        ];
+
+
+    }
+
 
 }
 
