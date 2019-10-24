@@ -35,13 +35,13 @@
             </div>
             <?php } ?>
             <!-- form start -->
-            <form role="form" action="/admin/orders/<?php echo htmlspecialchars( $order["idorder"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/status" method="post">
+            <form role="form" action="/admin/orders/<?php echo htmlspecialchars( $order["idorder"], ENT_COMPAT, 'UTF-8', FALSE ); ?>/status" method="post"> <!--rota para o qual esta passando os dados-->
                 <div class="box-body">
                     <div class="form-group">
                         <label for="desproduct">Status do Pedido</label>
                         <select class="form-control" name="idstatus">
                             <?php $counter1=-1;  if( isset($status) && ( is_array($status) || $status instanceof Traversable ) && sizeof($status) ) foreach( $status as $key1 => $value1 ){ $counter1++; ?> <!--receber o status do pedido-->
-                            <option <?php if( $value1["idstatus"] === $order["idstatus"] ){ ?>selected="selected"<?php } ?> value="<?php echo htmlspecialchars( $value1["idstatus"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"><?php echo htmlspecialchars( $value1["desstatus"], ENT_COMPAT, 'UTF-8', FALSE ); ?></option>
+                            <option <?php if( $value1["idstatus"] === $order["idstatus"] ){ ?>selected="selected"<?php } ?> value="<?php echo htmlspecialchars( $value1["idstatus"], ENT_COMPAT, 'UTF-8', FALSE ); ?>"><?php echo htmlspecialchars( $value1["desstatus"], ENT_COMPAT, 'UTF-8', FALSE ); ?></option> <!--carregar o status do pedido-->
                             <?php } ?>
                         </select>
                     </div>

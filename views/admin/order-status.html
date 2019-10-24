@@ -35,13 +35,13 @@
             </div>
             {/if}
             <!-- form start -->
-            <form role="form" action="/admin/orders/{$order.idorder}/status" method="post">
+            <form role="form" action="/admin/orders/{$order.idorder}/status" method="post"> <!--rota para o qual esta passando os dados-->
                 <div class="box-body">
                     <div class="form-group">
                         <label for="desproduct">Status do Pedido</label>
                         <select class="form-control" name="idstatus">
                             {loop="$status"} <!--receber o status do pedido-->
-                            <option {if="$value.idstatus === $order.idstatus"}selected="selected"{/if} value="{$value.idstatus}">{$value.desstatus}</option>
+                            <option {if="$value.idstatus === $order.idstatus"}selected="selected"{/if} value="{$value.idstatus}">{$value.desstatus}</option> <!--carregar o status do pedido-->
                             {/loop}
                         </select>
                     </div>

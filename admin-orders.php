@@ -14,13 +14,15 @@ $app->get("/admin/orders/:idorder/status", function($idorder){
     //verificar se o usuario esta logado
     User::verifyLogin();
 
-    //carregar qual o status atual do pedido
+     //carregar qual o status atual do pedido
     $order = new Order();
     $order->get((int)$idorder);
+      
 
     //definir o template
-    $page = new PageAdmin();
+    $page = new PageAdmin(); 
 
+ 
     //template a ser chamado
     $page->setTpl("order-status", [
         "order"=>$order->getValues(),
@@ -31,8 +33,34 @@ $app->get("/admin/orders/:idorder/status", function($idorder){
 
 });
 
-//rota para salvar o novo status do pedido
+//rota para salvar o novo status do pedido recebido
+$app->post("/admin/orders/:idorder/status", function($idorder){
 
+    //verificar se o usuario esta logado
+    User::verifyLogin();
+
+    //caso o IDSTATUS nao seja enviado
+    if(!isset($_POST['idstatus']) || !(int)$_POST['idstatus'] > 0){
+        Order::setError("Informe o status do pedido");
+        header("Location: /admin/orders/" .$idorder."/status");//redirecionar para o status do pedido
+        exit;
+    }
+
+     //carregar qual o status atual do pedido
+    $order = new Order();
+    $order->get((int)$idorder);
+
+    $order->setidstatus((int)$_POST['idstatus']); //metodo para alterar o status do pedido, com o dado que vem do formulario
+
+    //salvar o alteração
+    $order->save();
+
+    //carregar a mensagem de sucesso do status do pedido alterado
+    Order::setSuccess("Status atualizado");
+    header("Location: /admin/orders/" .$idorder."/status");//redirecionar para o status do pedido
+    exit;
+
+});
 
 //rota para excluir o pedido
 $app->get("/admin/orders/:idorder/delete", function($idorder){ //e preciso passar o id do pedido para fazer a exclusao
