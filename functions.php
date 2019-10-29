@@ -30,6 +30,14 @@ function getUserName(){
     return $user->getdesperson(); //carregar o nome do usuario que esta logado
 }
 
+//funcao para retornar a data de cadastro do usuario logado
+function getUserNameDateRegister(){
+    
+    $user = User::getFromSession(); //pegar o usuario da sessao que esta logado
+
+    return $user->getdtregister(); //carregar a data de cadastro do usuario
+}
+
 //funcao para apresentar a quantidade de itens do carrinho em todas as telas do site
 function getCartNrQtd(){
 
