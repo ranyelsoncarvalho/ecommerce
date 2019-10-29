@@ -123,6 +123,7 @@ $app->post('/admin/users/create', function(){
 
 //salvar a edição, quando o usuario dar o clique em "salvar"
 $app->post('/admin/users/:iduser', function($iduser){
+	//verificar se o usuario esta logado
 	User::verifyLogin();
 
 	$user = new User();
@@ -141,6 +142,73 @@ $app->post('/admin/users/:iduser', function($iduser){
 	header("Location: /admin/users"); //redirecionamento para a lista de usuarios
 	exit;
 	
+});
+
+//rota para alterar a senha do usuario
+$app->get("/admin/users/:iduser/password", function($iduser){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin();
+
+	//carregar o novo usuario, ao receber o ID dele
+	$user = new User();
+
+	$user->get((int)$iduser); //trazer as informacoes do usuario
+
+	//carregar o template
+	$page = new PageAdmin();
+
+	$page->setTpl("users-password", [ //chamar o template a ser carregado para alterar a senha
+		//passar as variaveis para o template
+		"user"=>$user->getValues(), //passar os dados do usuario
+		"msgError"=>User::getError(), //variaveis para apresentar o erro
+		"msgSuccess"=>User::getSuccess() //variavel para apresentar a mensagem de sucesso
+	]); 
+
+});
+
+//rota para a alteracao da senha via POST-->confirmar a alteracao
+$app->post("/admin/users/:iduser/password", function($iduser){
+
+	//verificar se o usuario esta logado
+	User::verifyLogin();
+
+	//fazer algumas validacoes: verificar se a senha foi definida, se e diferente da atual
+	if(!isset($_POST['despassword']) || $_POST['despassword'] === ''){
+		User::setError("Preencha a nova senha."); //apresenta a msg de erro
+		header("Location: /admin/users/$iduser/password");//realiza o redirect, passando o ID a ser alterado
+		exit;
+	}
+
+	//verificar se digitou a confirmacao da senha
+	if(!isset($_POST['despassword-confirm']) || $_POST['despassword-confirm'] === ''){
+		User::setError("Preencha a confirmacao da nova senha."); //apresenta a msg de erro
+		header("Location: /admin/users/$iduser/password");//realiza o redirect, passando o ID a ser alterado
+		exit;
+	}
+
+	//verificar se as senhas digitadas sao iguais
+	if($_POST['despassword'] !== $_POST['despassword-confirm']){
+		User::setError("Confirme corretamente as senhas."); //apresenta a msg de erro
+		header("Location: /admin/users/$iduser/password");//realiza o redirect, passando o ID a ser alterado
+		exit;
+	}
+
+	//carregar o novo usuario, ao receber o ID dele
+	$user = new User();
+
+	$user->get((int)$iduser); //trazer as informacoes do usuario
+
+	//metodo post nao possui tela
+
+	//chama o metodo para alterar a senha
+	$user->setPassword(User::getPasswordHash($_POST['despassword'])); //passando a senha ja com o hash para o banco
+
+	//apresentar a mensagem de sucesso e o redirect da pagina
+	User::setSuccess("Senha alterada com sucesso!");
+	header("Location: /admin/users/$iduser/password");
+	exit;
+
 });
 
 

@@ -259,6 +259,16 @@ class User extends Model {
 
     }
 
+    //metodo para atualizar a senha do usuario
+    public function setPassword($password) //recebe a senha em texto puro e necessario passar o hash
+	{
+		$sql = new Sql();
+		$sql->query("UPDATE tb_users SET despassword = :password WHERE iduser = :iduser", array(
+			":password"=>$password,
+			":iduser"=>$this->getiduser()
+		));
+	}
+
 
     //metodos para as variaveis de sessao de erro
     public static function setError($msg)
