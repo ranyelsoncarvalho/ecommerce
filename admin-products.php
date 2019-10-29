@@ -11,14 +11,41 @@ $app->get("/admin/products", function(){ //rota para listar todos os produtos
     User::verifyLogin();
 
     //variavel para listar todos os produtos
-    $products = Product::listAll(); //metodo para listar todo os produtos cadastrados
+    //$products = Product::listAll(); //metodo para listar todo os produtos cadastrados
+
+    $search = (isset($_GET['search'])) ? $_GET['search'] : ""; //variavel para fazer a busca do produto no portal admin
+	$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;//verificar se a pagina foi definida
+	
+	//filtro para retornar os produtos da busca
+	if($search!=''){
+		$pagination = Product::getPageSearch($search, $page); //metodo para a paginacao de produto com a busca
+	}else {
+		$pagination = Product::getPage($page); //metodo para a paginacao de produto sem a busca
+	}
+	
+
+	//montar as paginas
+	$pages = [];
+
+	//percorrer e resultar a paginacao
+	for ($x=0; $x < $pagination['pages']; $x++){
+		array_push($pages, [
+			'href'=>'/admin/products?'.http_build_query([
+				'page'=>$x+1,
+				'search'=>$search
+			]), //fazer com que a paginacao continue na proxima pagina
+			'text'=>$x+1 //texto a ser carregado na busca	(numero da pagina)
+		]);
+	}
 
     $page = new PageAdmin(); //classe do painel administrativo
     
     //template a ser chamado
     $page->setTpl("products", [
         //lista de produtos
-        "products"=>$products
+        "products"=>$pagination['data'], //carregar os dados dos produtos
+		"search"=>$search, //realiza a busca de produtos
+		"pages"=>$pages //variavel para a paginacao
     ]);
 
 });
