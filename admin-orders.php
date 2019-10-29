@@ -115,13 +115,41 @@ $app->get("/admin/orders", function(){
     //verificar se o usuario esta logado
     User::verifyLogin();
 
+    $search = (isset($_GET['search'])) ? $_GET['search'] : ""; //variavel para fazer a busca dos pedidos no portal admin
+	$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;//verificar se a pagina foi definida
+	
+	//filtro para retornar os pedidos da busca
+	if($search!=''){
+		$pagination = Order::getPageSearch($search, $page); //metodo para a paginacao do pedido com a busca
+	}else {
+		$pagination = Order::getPage($page); //metodo para a paginacao do pedido sem a busca
+	}
+	
+
+	//montar as paginas
+	$pages = [];
+
+	//percorrer e resultar a paginacao
+	for ($x=0; $x < $pagination['pages']; $x++){
+		array_push($pages, [
+			'href'=>'/admin/orders?'.http_build_query([
+				'page'=>$x+1,
+				'search'=>$search
+			]), //fazer com que a paginacao continue na proxima pagina
+			'text'=>$x+1 //texto a ser carregado na busca	(numero da pagina)
+		]);
+	}
+
     //criar o objeto PageAdmin
     $page = new PageAdmin();
 
     //carregar o template
     $page->setTpl("orders", [
         //passar a lista de pedidos
-        "orders"=>Order::listAll() //metodo para carregar todos os pedidos: variavel orders - carregar os dados para o template
+        //"orders"=>Order::listAll() //metodo para carregar todos os pedidos: variavel orders - carregar os dados para o template
+        "orders"=>$pagination['data'], //carregar os dados dos pedidos
+		"search"=>$search, //realiza a busca de pedidos
+		"pages"=>$pages //variavel para a paginacao
     ]);
 
 
