@@ -14,12 +14,40 @@ $app->get("/admin/categories", function(){
 	//verificar se o usuario esta logado
 	User::verifyLogin();
 
-	$categories = Category::listAll(); //classe de categoria e o metodo de categorias (arquivo: Category.php)
+	//$categories = Category::listAll(); //classe de categoria e o metodo de categorias (arquivo: Category.php)
+
+	$search = (isset($_GET['search'])) ? $_GET['search'] : ""; //variavel para fazer a busca de categoria no portal admin
+	$page = (isset($_GET['page'])) ? (int)$_GET['page'] : 1;//verificar se a pagina foi definida
+	
+	//filtro para retornar as categorias da busca
+	if($search!=''){
+		$pagination = Category::getPageSearch($search, $page); //metodo para a paginacao de categoria com a busca
+	}else {
+		$pagination = Category::getPage($page); //metodo para a paginacao de categoria sem a busca
+	}
+	
+
+	//montar as paginas
+	$pages = [];
+
+	//percorrer e resultar a paginacao
+	for ($x=0; $x < $pagination['pages']; $x++){
+		array_push($pages, [
+			'href'=>'/admin/categories?'.http_build_query([
+				'page'=>$x+1,
+				'search'=>$search
+			]), //fazer com que a paginacao continue na proxima pagina
+			'text'=>$x+1 //texto a ser carregado na busca	(numero da pagina)
+		]);
+	}
 
 	$page = new PageAdmin();
 
+	//passar as variaveis para o template
 	$page->setTpl("categories", [
-		'categories'=>$categories
+		"categories"=>$pagination['data'], //carregar os dados das categorias
+		"search"=>$search, //realiza a busca de categorias
+		"pages"=>$pages //variavel para a paginacao
 	]);
 });
 
