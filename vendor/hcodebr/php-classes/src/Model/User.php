@@ -134,6 +134,19 @@ class User extends Model {
         return $sql->select("SELECT * FROM tb_users a INNER JOIN tb_persons b USING(idperson) ORDER BY b.desperson"); //consulta para listar todos os usuarios cadastrados
     }
 
+    //metodo para retornar a quantidade de usuarios cadastrados
+    public function getTotalUsers(){
+        $sql = new Sql();
+        $results = $sql->select("SELECT COUNT(*) as numberusers FROM tb_users");
+        //verificar a quantidade de dados que eh retornada
+        if(count($results)> 0){
+            return $results[0];
+        }else {
+            return [];
+        }
+
+    }
+
     //metodo para salvar os dados no banco de dados
     public function save(){
         $sql = new Sql();

@@ -225,6 +225,19 @@ class Category extends Model {
 
     }
 
+    //metodo para retornar a quantidade de categorias cadastradas
+    public function getTotalCategory(){
+        $sql = new Sql();
+        $results = $sql->select("SELECT COUNT(*) as numbercategories FROM tb_categories");
+        //verificar a quantidade de dados que eh retornada
+        if(count($results)> 0){
+            return $results[0];
+        }else {
+            return [];
+        }
+
+    }
+
 
 }
 

@@ -214,6 +214,18 @@ class Order extends Model {
 
     }
 
+    //metodo para retornar a quantidade de pedidos cadastrados
+    public function getTotalOrders(){
+        $sql = new Sql();
+        $results = $sql->select("SELECT COUNT(*) as numberorders FROM tb_orders");
+        //verificar a quantidade de dados que eh retornada
+        if(count($results)> 0){
+            return $results[0];
+        }else {
+            return [];
+        }
+    }
+
 }
 
 

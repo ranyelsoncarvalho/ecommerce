@@ -218,6 +218,20 @@ class Product extends Model {
 
 
     }
+
+    //metodo para retornar a quantidade de categorias cadastradas
+    public function getTotalProducts(){
+        $sql = new Sql();
+        $results = $sql->select("SELECT COUNT(*) as numberproducts FROM tb_products");
+        //verificar a quantidade de dados que eh retornada
+        if(count($results)> 0){
+            return $results[0];
+        }else {
+            return [];
+        }
+
+    }
+
     
 }
 
